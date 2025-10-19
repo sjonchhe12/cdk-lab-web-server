@@ -4,25 +4,34 @@ import os
 import aws_cdk as cdk
 
 from cdk_lab_web_server.cdk_lab_web_server_stack import CdkLabWebServerStack
-
+from cdk_lab_web_server.cdk_lab_network_stack import CdkLabNetworkStack
 
 app = cdk.App()
-CdkLabWebServerStack(app, "CdkLabWebServerStack",
-    # If you don't specify 'env', this stack will be environment-agnostic.
-    # Account/Region-dependent features and context lookups will not work,
-    # but a single synthesized template can be deployed anywhere.
 
-    # Uncomment the next line to specialize this stack for the AWS Account
-    # and Region that are implied by the current CLI configuration.
+# Create the network stack first
+network_stack = CdkLabNetworkStack(app, "CdkLabNetworkStack")
 
-    #env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
+# Pass the VPC property from network stack
+CdkLabWebServerStack(
+    app,
+    "CdkLabWebServerStack",
+    cdk_vpc=network_stack.vpc
+)
 
-    # Uncomment the next line if you know exactly what Account and Region you
-    # want to deploy the stack to. */
+# If you don't specify 'env', this stack will be environment-agnostic.
+# Account/Region-dependent features and context lookups will not work,
+# but a single synthesized template can be deployed anywhere.
 
-    #env=cdk.Environment(account='123456789012', region='us-east-1'),
+# Uncomment the next line to specialize this stack for the AWS Account
+# and Region that are implied by the current CLI configuration.
 
-    # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-    )
+# env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
+
+# Uncomment the next line if you know exactly what Account and Region you
+# want to deploy the stack to.
+
+# env=cdk.Environment(account='123456789012', region='us-east-1'),
+
+# For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
 
 app.synth()
